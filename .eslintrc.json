@@ -1,0 +1,53 @@
+{
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "tsconfig.json",
+		"sourceType": "module"
+	},
+	"plugins": ["@typescript-eslint/eslint-plugin"],
+	"extends": [
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended"
+	],
+	"root": true,
+	"env": {
+		"node": true
+	},
+	"rules": {
+		"quotes": "off",
+		"no-var": "warn",
+		"func-style": ["error", "declaration"],
+		"no-case-declarations": "off",
+		"no-control-regex": "off",
+		"no-unused-vars": "off",
+		"prefer-arrow-callback": "error",
+		"one-var": ["warn", "consecutive"],
+		"curly": ["warn", "multi"],
+		"@typescript-eslint/array-type": [
+			"warn",
+			{
+				"default": "array-simple"
+			}
+		],
+		"@typescript-eslint/await-thenable": ["warn"],
+		"@typescript-eslint/explicit-function-return-type": ["warn"],
+		"@typescript-eslint/explicit-member-accessibility": [
+			"warn",
+			{
+				"accessibility": "no-public"
+			}
+		],
+		"@typescript-eslint/interface-name-prefix": ["off"],
+		"@typescript-eslint/no-explicit-any": ["error"],
+		"@typescript-eslint/no-require-imports": ["warn"],
+		"@typescript-eslint/no-unnecessary-type-assertion": ["warn"],
+		"@typescript-eslint/no-unused-vars": ["warn"],
+		"@typescript-eslint/prefer-as-const": ["warn"],
+		"@typescript-eslint/prefer-for-of": ["warn"],
+		"@typescript-eslint/prefer-reduce-type-parameter": ["warn"],
+		"@typescript-eslint/prefer-string-starts-ends-with": ["warn"],
+		"@typescript-eslint/promise-function-async": ["error"],
+		"@typescript-eslint/unbound-method": "off",
+		"prettier/prettier": "warn"
+	}
+}
