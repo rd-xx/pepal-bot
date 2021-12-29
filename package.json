@@ -19,5 +19,7 @@
 	"bugs": {
 		"url": "https://github.com/Reydux/pepal-bot/issues"
 	},
-	"homepage": "https://github.com/Reydux/pepal-bot#readme"
+	"devDependencies": {
+		"typescript": "^4.5.4"
+	}
 }
