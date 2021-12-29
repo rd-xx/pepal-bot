@@ -20,6 +20,15 @@
 		"url": "https://github.com/Reydux/pepal-bot/issues"
 	},
 	"devDependencies": {
+		"prettier": "^2.5.1",
 		"typescript": "^4.5.4"
+	},
+	"prettier": {
+		"printWidth": 80,
+		"trailingComma": "none",
+		"useTabs": true,
+		"tabWidth": 2,
+		"endOfLine": "auto",
+		"singleQuote": true
 	}
 }
