@@ -1,0 +1,23 @@
+{
+	"name": "pepal-bot",
+	"version": "0.0.1",
+	"description": "Bot Discord utilitaire interagissant avec Pepal, portail du groupe SDV Éducation.",
+	"main": "dist/index.js",
+	"scripts": {
+		"start:dev": "tsc-watch --onSuccess \"node .\"",
+		"start:prod": "tsc && node ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Reydux/pepal-bot.git"
+	},
+	"keywords": [
+		"pepal"
+	],
+	"author": "",
+	"license": "GPL-3.0-or-later",
+	"bugs": {
+		"url": "https://github.com/Reydux/pepal-bot/issues"
+	},
+	"homepage": "https://github.com/Reydux/pepal-bot#readme"
+}
