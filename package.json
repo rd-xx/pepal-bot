@@ -20,7 +20,14 @@
 		"url": "https://github.com/Reydux/pepal-bot/issues"
 	},
 	"homepage": "https://github.com/Reydux/pepal-bot#readme",
+	"dependencies": {
+		"axios": "^0.24.0",
+		"discord-akairo": "npm:@notenoughupdates/discord-akairo@dev",
+		"discord.js": "^13.4.0",
+		"node-html-parser": "^5.2.0"
+	},
 	"devDependencies": {
+		"@types/node": "^17.0.5",
 		"eslint": "^8.5.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-prettier": "^4.0.0",
