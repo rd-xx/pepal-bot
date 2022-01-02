@@ -3,6 +3,8 @@
 		"module": "CommonJS",
 		"target": "ESNext",
 		"outDir": "./dist",
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
 		"removeComments": true,
 		"strict": true
 	},
