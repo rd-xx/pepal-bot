@@ -69,7 +69,7 @@ export default class Pepal {
 				this.grades.push({
 					discipline: disciplineName,
 					title: format(infos[0].text.replace('PUBLIE', '')),
-					date: format(infos[1].text) as unknown as Date,
+					date: format(infos[1].text) as unknown as Date, // WIP
 					grade: Number(infos[2].text),
 					comment
 				});
