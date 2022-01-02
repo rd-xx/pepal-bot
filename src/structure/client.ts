@@ -34,7 +34,7 @@ export default class Client extends AkairoClient {
 
 	// --------------- \\
 
-	private async _init(): Promise<void> {
+	private async init(): Promise<void> {
 		this.listenerHandler.setEmitters({
 			listenerHandler: this.listenerHandler,
 			process
@@ -63,7 +63,7 @@ export default class Client extends AkairoClient {
 	// --------------- \\
 
 	async start(): Promise<string> {
-		await this._init();
+		await this.init();
 		return this.login(this.#config.token);
 	}
 }
