@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  node:
+    container_name: pepalBot_node
+    image: node:16-alpine
+    restart: unless-stopped
+    working_dir: /app
+    command: 'npm run start:$ENVIRONMENT'
+    volumes:
+      - .:/app
+    links:
+      - db
+
+  db:
+    container_name: pepalBot_db
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=$DB_USERNAME
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
