@@ -4,7 +4,7 @@ import BaseEntity from '../utils/base.entity';
 // -------------------------------------------------- \\
 
 export default class UserEntity extends BaseEntity {
-	@Column('varchar', { length: 20 })
+	@Column('varchar', { unique: true, length: 20 })
 	discordId?: string;
 
 	// --------------- \\
