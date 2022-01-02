@@ -1,8 +1,7 @@
 import CrawlerClient from '../structure/client';
 import { Listener } from 'discord-akairo';
-import { join } from 'path';
 import { readFileSync } from 'fs';
-import Pepal from '../structure/pepal';
+import { join } from 'path';
 
 // -------------------------------------------------- \\
 
@@ -23,12 +22,5 @@ export default class ReadyListener extends Listener {
 
 		console.log(`pepal-bot —`, botVersion);
 		console.log(`Connecté au compte: ${client.user?.tag}\n`);
-
-		const pepal = new Pepal('COOKIE POUR TESTER ICI');
-		console.log(pepal);
-		await pepal.getGrades();
-
-		console.log();
-		console.log('passei\n');
 	}
 }
