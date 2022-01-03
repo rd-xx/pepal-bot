@@ -1,6 +1,7 @@
 import { parse, HTMLElement } from 'node-html-parser';
-import { format } from 'tsuki-utilities';
 import { makeRequest } from '../utils/https.helper';
+import { format } from 'tsuki-utilities';
+import { DateTime } from 'luxon';
 
 export default class Pepal {
 	#cookie: string;
@@ -69,7 +70,9 @@ export default class Pepal {
 				this.grades.push({
 					discipline: disciplineName,
 					title: format(infos[0].text.replace('PUBLIE', '')),
-					date: format(infos[1].text) as unknown as Date, // WIP
+					date: DateTime.fromFormat(format(infos[1].text), 'cccc dd LLL yyyy', {
+						locale: 'fr'
+					}).toJSDate(),
 					grade: Number(infos[2].text),
 					comment
 				});
