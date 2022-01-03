@@ -13,7 +13,9 @@ export default class ChangeDomainCommand extends Command {
 			args: [
 				{
 					id: 'cookie',
-					match: 'rest'
+					prompt: {
+						start: 'Quel le cookie de session ?'
+					}
 				}
 			]
 		});
