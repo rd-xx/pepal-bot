@@ -1,4 +1,4 @@
-import { AkairoClient, ListenerHandler } from 'discord-akairo';
+import { AkairoClient, ListenerHandler, CommandHandler } from 'discord-akairo';
 import { Connection, createConnection } from 'typeorm';
 import { join } from 'path';
 
@@ -12,6 +12,12 @@ export default class Client extends AkairoClient {
 
 	listenerHandler = new ListenerHandler(this, {
 		directory: join(__dirname, '..', 'listeners')
+	});
+	commandHandler = new CommandHandler(this, {
+		directory: join(__dirname, '..', 'commands'),
+		prefix: () => '*',
+		commandUtil: true,
+		commandUtilLifetime: 300000
 	});
 
 	// --------------- \\
@@ -35,6 +41,7 @@ export default class Client extends AkairoClient {
 	// --------------- \\
 
 	private async init(): Promise<void> {
+		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.setEmitters({
 			listenerHandler: this.listenerHandler,
 			process
@@ -57,6 +64,7 @@ export default class Client extends AkairoClient {
 			.catch(async () => await connection.synchronize());
 
 		this.listenerHandler.loadAll();
+		this.commandHandler.loadAll();
 		this.db = connection;
 	}
 
