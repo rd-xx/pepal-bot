@@ -1,8 +1,8 @@
 import { Message, MessageEmbed } from 'discord.js';
 import { palette } from '../utils/constants';
 import { Command } from 'discord-akairo';
-import { format } from 'tsuki-utilities';
 import Pepal from '../structure/pepal';
+import { DateTime } from 'luxon';
 
 // -------------------------------------------------- \\
 
@@ -33,10 +33,15 @@ export default class ChangeDomainCommand extends Command {
 		embed.setColor(palette.success);
 
 		let description = '';
-		for (const grade of pepal.grades.values())
-			description += `**${grade.discipline}** : ${grade.title} > **${grade.grade}**\ ||${grade.date}||\n`;
+		for (const grade of pepal.grades
+			.sort((a, b) => b.date.getTime() - a.date.getTime())
+			.values())
+			description += `${DateTime.fromJSDate(grade.date).toLocaleString(
+				DateTime.DATE_SHORT,
+				{ locale: 'fr' }
+			)} — **${grade.discipline}** : ${grade.title} » **${grade.grade}**\n`;
 
-		embed.setDescription(format(description));
+		embed.setDescription(description.trim());
 		return await message.reply({ embeds: [embed] });
 	}
 }
