@@ -15,7 +15,7 @@ export default class Client extends AkairoClient {
 	});
 	commandHandler = new CommandHandler(this, {
 		directory: join(__dirname, '..', 'commands'),
-		prefix: () => '*',
+		prefix: (): string => '*',
 		commandUtil: true,
 		commandUtilLifetime: 300000
 	});
@@ -43,8 +43,7 @@ export default class Client extends AkairoClient {
 	private async init(): Promise<void> {
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.setEmitters({
-			listenerHandler: this.listenerHandler,
-			process
+			commandHandler: this.commandHandler
 		});
 
 		const connection = await createConnection({
