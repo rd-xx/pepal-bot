@@ -23,6 +23,8 @@ export default class CommandErrorListener extends Listener {
 		if (error instanceof UnexpectedError) errorMsg = error.message;
 		else errorMsg = "Une erreur inespérée s'est produite.";
 
+		console.log(error);
+
 		// --------------- \\
 
 		if (command) await message.reply(errorMsg);
