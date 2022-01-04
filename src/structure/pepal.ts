@@ -22,6 +22,21 @@ export default class Pepal {
 		grade: number;
 		comment: string | null;
 	}> = [];
+	timeTable: Array<{
+		discipline: string;
+		professor: string | null;
+		room: string | null;
+		start: Date;
+		end: Date;
+		allDay: boolean;
+	}> = [];
+	homework: Array<{
+		discipline: string;
+		title: string;
+		description: string | null;
+		start: Date;
+		end: Date;
+	}> = [];
 
 	/**
 	 * Constructeur. Fonction appelée automatiquement à chaque initialisation de la classe.
@@ -171,6 +186,74 @@ export default class Pepal {
 					comment
 				});
 			}
+		}
+
+		return this;
+	}
+
+	async getTimeTable(): Promise<Pepal> {
+		const rawHtml = (await makeRequest(this.#cookie as string, '?my=edt')) + '',
+			parsedHtml = parse(rawHtml),
+			script = parsedHtml.querySelectorAll('script')[9].childNodes[0],
+			startIndex = script.text.indexOf('events:') + 7,
+			endIndex = script.text.indexOf('"}],') + 3,
+			stringArray = script.text.substring(startIndex, endIndex),
+			ttArray: Array<{
+				id: number;
+				title: string;
+				description: string;
+				location: string;
+				start: string;
+				end: string;
+				allDay: boolean;
+				className: string;
+			}> = JSON.parse(stringArray);
+
+		for (const lesson of ttArray.values()) {
+			let isHomework = false,
+				discipline = '',
+				title = '';
+			if (lesson.title.includes('<'))
+				discipline = format(
+					parse(lesson.title).querySelectorAll('.type_cours')[0].text
+				);
+			else if (lesson.title.includes('Rendu : ')) {
+				isHomework = true;
+				discipline = lesson.title.split(' - ').at(-1) as string;
+				title = lesson.title
+					.replace('Rendu : ', '')
+					.replace(` - ${discipline}`, '');
+			} else discipline = lesson.title;
+
+			let professor = null;
+			if (
+				lesson.description.includes('Intervenant : ') &&
+				lesson.description !== 'Intervenant : ' && // Nécessaire pour les cours qui n'ont pas encore d'intervenant
+				!lesson.description.includes('AUTONOMIE')
+			)
+				professor = lesson.description.replace('Intervenant : ', '');
+
+			let room = null;
+			if (lesson.location.includes(' : '))
+				room = lesson.location.replace('Salle : ', '');
+
+			if (isHomework)
+				this.homework.push({
+					discipline,
+					title,
+					description: lesson.description || null,
+					start: new Date(lesson.start),
+					end: new Date(lesson.end)
+				});
+			else
+				this.timeTable.push({
+					discipline,
+					professor,
+					room,
+					start: new Date(lesson.start),
+					end: new Date(lesson.end),
+					allDay: lesson.allDay
+				});
 		}
 
 		return this;
