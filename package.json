@@ -22,6 +22,7 @@
 	"homepage": "https://github.com/Reydux/pepal-bot#readme",
 	"dependencies": {
 		"axios": "^0.24.0",
+		"crypto-js": "^4.1.1",
 		"discord-akairo": "npm:@notenoughupdates/discord-akairo@dev",
 		"discord.js": "^13.5.0",
 		"dotenv": "^10.0.0",
@@ -32,6 +33,7 @@
 		"typeorm": "^0.2.41"
 	},
 	"devDependencies": {
+		"@types/crypto-js": "^4.1.0",
 		"@types/luxon": "^2.0.8",
 		"@types/node": "^17.0.6",
 		"eslint": "^8.6.0",

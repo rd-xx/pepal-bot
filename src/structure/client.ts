@@ -56,8 +56,9 @@ export default class Client extends AkairoClient {
 			database: process.env.DB_NAME,
 			// ##### \\
 			cache: true,
+			logging: process.env.ENVIRONMENT === 'dev',
 			// ##### \\
-			entities: ['../database/*.entity.js']
+			entities: ['dist/**/*.entity.js']
 		});
 		await connection.close();
 		await connection.connect();

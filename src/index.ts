@@ -10,7 +10,8 @@ if (
 	!process.env.DB_PORT ||
 	!process.env.DB_USERNAME ||
 	!process.env.DB_PASSWORD ||
-	!process.env.DB_NAME
+	!process.env.DB_NAME ||
+	!process.env.CRYPTO_KEY
 )
 	throw new Error(
 		"Les environment variables n'ont pas étés correctement définies."
