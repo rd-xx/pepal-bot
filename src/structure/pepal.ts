@@ -6,6 +6,9 @@ import { DateTime } from 'luxon';
 export default class Pepal {
 	#cookie: string;
 
+	name: string | undefined;
+	class: string | undefined;
+
 	disciplines: Array<{ name: string; coefficient: number }> = [];
 	grades: Array<{
 		discipline: string;
@@ -19,16 +22,32 @@ export default class Pepal {
 		this.#cookie = cookie;
 	}
 
-	async getGrades(): Promise<void> {
-		const rawHtml = (await makeRequest(this.#cookie, '?my=notes')) + '',
-			rawHtmlTable = parse(rawHtml).querySelector('.table-bordered');
+	private setUserInfos(parsedHtml: HTMLElement) {
+		const userName = parsedHtml.querySelector('.username'),
+			userClass = parsedHtml.querySelector('a[href*="/agora/room"]');
 
-		if (!rawHtmlTable)
+		if (!userName || !userClass)
 			throw new Error(
-				"Une erreur inespérée s'est produite. Je n'ai pas trouvé la table des notes."
+				"Une erreur inespérée s'est produite. Le web parsing a échoué."
 			);
 
-		const gradesTable = rawHtmlTable.childNodes[3].childNodes.filter(
+		this.name = format(userName.text);
+		this.class = format(userClass.text.replace('Agora', ''));
+	}
+
+	async getGrades(): Promise<void> {
+		const rawHtml = (await makeRequest(this.#cookie, '?my=notes')) + '',
+			parsedHtml = parse(rawHtml),
+			htmlTable = parsedHtml.querySelector('.table-bordered');
+
+		if (!htmlTable)
+			throw new Error(
+				"Une erreur inespérée s'est produite. Le web parsing a échoué."
+			);
+
+		this.setUserInfos(parsedHtml);
+
+		const gradesTable = htmlTable.childNodes[3].childNodes.filter(
 			(_) => format(_.text) && format(_.textContent)
 		);
 		for (const [i, child] of gradesTable.entries()) {
