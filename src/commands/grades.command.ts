@@ -1,6 +1,8 @@
 import { Message, MessageEmbed } from 'discord.js';
+import UserEntity from '../database/user.entity';
 import { palette } from '../utils/constants';
 import { Command } from 'discord-akairo';
+import { getConnection } from 'typeorm';
 import Pepal from '../structure/pepal';
 import { DateTime } from 'luxon';
 
@@ -9,23 +11,21 @@ import { DateTime } from 'luxon';
 export default class ChangeDomainCommand extends Command {
 	constructor() {
 		super('grades', {
-			aliases: ['notes', 'note'],
-			args: [
-				{
-					id: 'cookie',
-					prompt: {
-						start: 'Quel le cookie de session ?'
-					}
-				}
-			]
+			aliases: ['notes', 'note']
 		});
 	}
 
-	async exec(
-		message: Message,
-		{ cookie }: { cookie: string }
-	): Promise<Message> {
-		const pepal = new Pepal(cookie),
+	async exec(message: Message): Promise<Message> {
+		const user = await getConnection()
+			.getRepository(UserEntity)
+			.findOne({ discordId: message.author.id });
+
+		if (!user || !user.ppCookie)
+			throw new Error(
+				"Une erreur inespérée s'est produite. Il paraît que l'utilisateur n'est pas enregistré dans la base de données."
+			);
+
+		const pepal = new Pepal(user.ppCookie),
 			embed = new MessageEmbed();
 		await pepal.getGrades();
 
