@@ -29,9 +29,7 @@ export default class Pepal {
 			userClass = parsedHtml.querySelector('a[href*="/agora/room"]');
 
 		if (!userName || !userClass)
-			throw new Error(
-				"Une erreur inespérée s'est produite. Le web parsing a échoué."
-			);
+			throw new UnexpectedError('Le web parsing a échoué.');
 
 		this.name = format(userName.text);
 		this.class = format(userClass.text.replace('Agora', ''));
@@ -42,10 +40,7 @@ export default class Pepal {
 			parsedHtml = parse(rawHtml),
 			htmlTable = parsedHtml.querySelector('.table-bordered');
 
-		if (!htmlTable)
-			throw new Error(
-				"Une erreur inespérée s'est produite. Le web parsing a échoué."
-			);
+		if (!htmlTable) throw new UnexpectedError('Le web parsing a échoué.');
 
 		this.setUserInfos(parsedHtml);
 
@@ -83,9 +78,7 @@ export default class Pepal {
 					comment = format(nextElement.text);
 
 				if (!disciplineName)
-					throw new Error(
-						"Une erreur inespérée s'est produite. Le web parsing a échoué."
-					);
+					throw new UnexpectedError('Le web parsing a échoué.');
 
 				const infos = element.childNodes.filter((_) => format(_.text));
 				this.grades.push({

@@ -1,3 +1,4 @@
+import UnexpectedError from '../../structure/unexpected.error';
 import { Command, Listener } from 'discord-akairo';
 import { Message } from 'discord.js';
 
@@ -19,7 +20,7 @@ export default class CommandErrorListener extends Listener {
 		command?: Command
 	): Promise<void> {
 		let errorMsg: string | undefined;
-		if (error instanceof Error) errorMsg = error.message;
+		if (error instanceof UnexpectedError) errorMsg = error.message;
 		else errorMsg = "Une erreur inespérée s'est produite.";
 
 		// --------------- \\
