@@ -1,4 +1,4 @@
-import CrawlerClient from '../structure/client';
+import CrawlerClient from '../../structure/client';
 import { Listener } from 'discord-akairo';
 import { readFileSync } from 'fs';
 import { join } from 'path';
