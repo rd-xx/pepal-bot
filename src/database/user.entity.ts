@@ -13,11 +13,14 @@ export default class UserEntity extends BaseEntity {
 	@Column('text', { unique: true })
 	ppCookie?: string;
 
+	@Column('numeric', { nullable: true })
+	currentGrades?: number;
+
 	// --------------- \\
 
 	@BeforeInsert()
 	@BeforeUpdate()
-	encryptCookie() {
+	encryptCookie(): void {
 		this.ppCookie = crypto.AES.encrypt(
 			this.ppCookie as string,
 			process.env.CRYPTO_KEY
@@ -25,7 +28,7 @@ export default class UserEntity extends BaseEntity {
 	}
 
 	@AfterLoad()
-	decryptCookie() {
+	decryptCookie(): void {
 		this.ppCookie = crypto.AES.decrypt(
 			this.ppCookie as string,
 			process.env.CRYPTO_KEY

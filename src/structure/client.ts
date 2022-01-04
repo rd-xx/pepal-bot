@@ -56,6 +56,7 @@ export default class Client extends AkairoClient {
 			// ##### \\
 			cache: true,
 			logging: process.env.ENVIRONMENT === 'dev',
+			synchronize: process.env.ENVIRONMENT === 'dev',
 			// ##### \\
 			entities: ['dist/**/*.entity.js']
 		});
