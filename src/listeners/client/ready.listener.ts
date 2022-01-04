@@ -16,7 +16,7 @@ export default class ReadyListener extends Listener {
 	async exec(client: CrawlerClient): Promise<void> {
 		const botVersion: number = JSON.parse(
 			readFileSync(
-				join(__dirname, '..', '..', 'package.json')
+				join(__dirname, '..', '..', '..', 'package.json')
 			) as unknown as string
 		).version;
 
