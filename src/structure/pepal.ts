@@ -1,15 +1,18 @@
 import { parse, HTMLElement } from 'node-html-parser';
 import { makeRequest } from '../utils/https.helper';
+import UserEntity from '../database/user.entity';
+import UnexpectedError from './unexpected.error';
 import { format } from 'tsuki-utilities';
+import { getConnection } from 'typeorm';
 import { DateTime } from 'luxon';
 
 // -------------------------------------------------- \\
 
 export default class Pepal {
-	#cookie: string;
-
-	name: string | undefined;
-	class: string | undefined;
+	discordId: string;
+	name?: string;
+	class?: string;
+	#cookie?: string;
 
 	disciplines: Array<{ name: string; coefficient: number }> = [];
 	grades: Array<{
@@ -20,11 +23,75 @@ export default class Pepal {
 		comment: string | null;
 	}> = [];
 
-	constructor(cookie: string) {
-		this.#cookie = cookie;
+	/**
+	 * Constructeur. Fonction appelée automatiquement à chaque initialisation de la classe.
+	 * @param discordId Id discord de l'utilisateur.
+	 */
+	private constructor(discordId: string) {
+		this.discordId = discordId;
 	}
 
-	private setUserInfos(parsedHtml: HTMLElement) {
+	/**
+	 * Véritable fonction d'initialisation. Le constructeur ne pouvait pas être utilisé car il n'accepte pas les fonctions async.
+	 * @param discordId Id discord de l'utilisateur.
+	 * @param cookie Cookie de l'utilisateur.
+	 * @param fromLogin Si la fonction est exécutée depuis la commande 'login'.
+	 */
+	static async init(
+		discordId: string,
+		cookie?: string,
+		fromLogin = false
+	): Promise<Pepal> {
+		const thisClass = new Pepal(discordId);
+
+		if (!fromLogin)
+			if (cookie) await thisClass.saveCookie(cookie);
+			else await thisClass.setCookie();
+
+		return thisClass;
+	}
+
+	/**
+	 * Fonction utilisée pour sauvegarder le cookie dans la base de données.
+	 * @param cookie Cookie de l'utilisateur.
+	 */
+	async saveCookie(cookie: string): Promise<boolean> {
+		const userRepo = getConnection().getRepository(UserEntity),
+			user =
+				(await userRepo.findOne({ discordId: this.discordId })) ||
+				new UserEntity(),
+			inserted = user.id === undefined;
+
+		user.discordId = this.discordId;
+		user.ppCookie = cookie;
+		await userRepo.save(user);
+
+		return inserted;
+	}
+
+	/**
+	 * Définit le cookie de la classe par rapport au cookie stocké dans la base de données.
+	 */
+	async setCookie(): Promise<Pepal> {
+		const user = await getConnection()
+			.getRepository(UserEntity)
+			.findOne({ discordId: this.discordId });
+
+		if (!user)
+			throw new UnexpectedError(
+				"Il paraît que l'utilisateur n'a pas été enregistré dans la base de données."
+			);
+
+		this.#cookie = user.ppCookie;
+		console.log(user.ppCookie);
+		return this;
+	}
+
+	/**
+	 * Cette fonction est exécutée dans toutes les fonctions intéragissant avec une page Pepal pour (re)définir les informations de l'utilisateur, présents dans toutes les pages.
+	 * @param parsedHtml Quelconque page HTML de Pepal.
+	 */
+	private async setUserInfos(parsedHtml: HTMLElement): Promise<Pepal> {
 		const userName = parsedHtml.querySelector('.username'),
 			userClass = parsedHtml.querySelector('a[href*="/agora/room"]');
 
@@ -33,10 +100,23 @@ export default class Pepal {
 
 		this.name = format(userName.text);
 		this.class = format(userClass.text.replace('Agora', ''));
+
+		return this;
 	}
 
-	async getGrades(): Promise<void> {
-		const rawHtml = (await makeRequest(this.#cookie, '?my=notes')) + '',
+	/**
+	 * Fonction utilisée pour récupérer toutes les matières et notes de l'utilisateur.
+	 * @param cookie Cookie spéficique. Paramètre utilisé seulement dans le cas de la commande 'login'.
+	 */
+	async getGrades(cookie?: string): Promise<Pepal> {
+		if (!cookie && !this.#cookie)
+			throw new UnexpectedError("Je n'ai aucun cookie à utiliser.");
+
+		const rawHtml =
+				(await makeRequest(
+					(cookie as string) || (this.#cookie as string),
+					'?my=notes'
+				)) + '',
 			parsedHtml = parse(rawHtml),
 			htmlTable = parsedHtml.querySelector('.table-bordered');
 
@@ -92,5 +172,7 @@ export default class Pepal {
 				});
 			}
 		}
+
+		return this;
 	}
 }
