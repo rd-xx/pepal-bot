@@ -55,12 +55,14 @@ export default class Client extends AkairoClient {
 			password: process.env.DB_PASSWORD,
 			database: process.env.DB_NAME,
 			// ##### \\
-			cache: true
+			cache: true,
+			// ##### \\
+			entities: ['../database/*.entity.js']
 		});
 		await connection.close();
 		await connection.connect();
 		await connection
-			.query('SELECT id FROM guilds;')
+			.query('SELECT id FROM users;')
 			.catch(async () => await connection.synchronize());
 
 		this.listenerHandler.loadAll();
