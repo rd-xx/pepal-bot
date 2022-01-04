@@ -83,7 +83,7 @@ export default class Pepal {
 			);
 
 		this.#cookie = user.ppCookie;
-		console.log(user.ppCookie);
+
 		return this;
 	}
 
