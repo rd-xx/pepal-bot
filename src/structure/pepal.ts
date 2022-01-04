@@ -3,6 +3,8 @@ import { makeRequest } from '../utils/https.helper';
 import { format } from 'tsuki-utilities';
 import { DateTime } from 'luxon';
 
+// -------------------------------------------------- \\
+
 export default class Pepal {
 	#cookie: string;
 

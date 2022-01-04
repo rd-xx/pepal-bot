@@ -2,6 +2,8 @@ import { Message, MessageEmbed } from 'discord.js';
 import { palette } from '../utils/constants';
 import { Command } from 'discord-akairo';
 
+// -------------------------------------------------- \\
+
 export default class FaqCommand extends Command {
 	constructor() {
 		super('faq', {

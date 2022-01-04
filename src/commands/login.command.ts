@@ -4,6 +4,8 @@ import { Command } from 'discord-akairo';
 import { getConnection } from 'typeorm';
 import Pepal from '../structure/pepal';
 
+// -------------------------------------------------- \\
+
 export default class LoginCommand extends Command {
 	constructor() {
 		super('login', {
