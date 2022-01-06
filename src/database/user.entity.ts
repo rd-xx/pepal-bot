@@ -14,7 +14,7 @@ export default class UserEntity extends BaseEntity {
 	ppCookie?: string;
 
 	@Column('numeric', { nullable: true })
-	currentGrades?: number;
+	currentGrades?: number | null;
 
 	// --------------- \\
 
@@ -33,5 +33,8 @@ export default class UserEntity extends BaseEntity {
 			this.ppCookie as string,
 			process.env.CRYPTO_KEY
 		).toString(crypto.enc.Utf8);
+
+		// if (this.currentGrades !== undefined)
+		// 	this.currentGrades = Number(this.currentGrades);
 	}
 }
