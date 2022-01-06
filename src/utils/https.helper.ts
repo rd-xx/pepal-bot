@@ -2,6 +2,13 @@ import { request } from 'https';
 
 // -------------------------------------------------- \\
 
+/**
+ * Fonction pour acquérir une page HTML de Pepal.
+ * Il serait plus simple d'utiliser une bibliothèque comme Axios pour ce genre d'opération,
+ * mais je voulais limiter les dépendances au maximum.
+ * @param cookie Cookie de l'utilisateur.
+ * @param path Chemin de la page de Pepal.
+ */
 export async function makeRequest(
 	cookie: string,
 	path: string
