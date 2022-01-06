@@ -28,7 +28,9 @@ export async function makeRequest(
 						resolve(responsePayload);
 					else {
 						console.log(response, responsePayload);
-						reject(`Deu erro ao tentar adquirir a página ${path}`);
+						reject(
+							`Une erreur est survenue lors de l'obtention de la page ${path}`
+						);
 					}
 				});
 			}
