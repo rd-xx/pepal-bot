@@ -1,6 +1,11 @@
-import { AkairoClient, ListenerHandler, CommandHandler } from 'discord-akairo';
 import { Connection, createConnection } from 'typeorm';
 import { join } from 'path';
+import {
+	AkairoClient,
+	ListenerHandler,
+	CommandHandler,
+	TaskHandler
+} from 'discord-akairo';
 
 // -------------------------------------------------- \\
 
@@ -13,11 +18,16 @@ export default class Client extends AkairoClient {
 	listenerHandler = new ListenerHandler(this, {
 		directory: join(__dirname, '..', 'listeners')
 	});
+
 	commandHandler = new CommandHandler(this, {
 		directory: join(__dirname, '..', 'commands'),
 		prefix: (): string => '*',
 		commandUtil: true,
 		commandUtilLifetime: 300000
+	});
+
+	taskHandler = new TaskHandler(this, {
+		directory: join(__dirname, '..', 'tasks')
 	});
 
 	// --------------- \\
@@ -41,10 +51,10 @@ export default class Client extends AkairoClient {
 	// --------------- \\
 
 	private async init(): Promise<void> {
-		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.setEmitters({
 			commandHandler: this.commandHandler
 		});
+		this.commandHandler.useListenerHandler(this.listenerHandler);
 
 		const connection = await createConnection({
 			type: 'postgres',
@@ -68,14 +78,16 @@ export default class Client extends AkairoClient {
 
 		this.listenerHandler.loadAll();
 		this.commandHandler.loadAll();
+		this.taskHandler.loadAll();
 		this.db = connection;
 	}
 
 	// --------------- \\
 
-	async start(): Promise<string> {
+	async start(): Promise<void> {
 		await this.init();
-		return this.login(this.#config.token);
+		await this.login(this.#config.token);
+		this.taskHandler.startAll();
 	}
 }
 

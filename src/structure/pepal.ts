@@ -135,7 +135,10 @@ export default class Pepal {
 			parsedHtml = parse(rawHtml),
 			htmlTable = parsedHtml.querySelector('.table-bordered');
 
-		if (!htmlTable) throw new UnexpectedError('Le web parsing a échoué.');
+		if (!htmlTable)
+			throw new UnexpectedError(
+				'Il paraît que le cookie ait expiré... Veuillez utiliser la commande **login** à nouveau.'
+			);
 
 		this.setUserInfos(parsedHtml);
 
@@ -194,7 +197,14 @@ export default class Pepal {
 	async getTimeTable(): Promise<Pepal> {
 		const rawHtml = (await makeRequest(this.#cookie as string, '?my=edt')) + '',
 			parsedHtml = parse(rawHtml),
-			script = parsedHtml.querySelectorAll('script')[9].childNodes[0],
+			scripts = parsedHtml.querySelectorAll('script')[9];
+
+		if (!scripts)
+			throw new UnexpectedError(
+				'Il paraît que le cookie ait expiré... Veuillez utiliser la commande **login** à nouveau.'
+			);
+
+		const script = scripts.childNodes[0],
 			startIndex = script.text.indexOf('events:') + 7,
 			endIndex = script.text.indexOf('"}],') + 3,
 			stringArray = script.text.substring(startIndex, endIndex),
