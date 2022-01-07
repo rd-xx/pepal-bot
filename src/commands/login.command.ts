@@ -1,4 +1,5 @@
 import { Message, MessageEmbed } from 'discord.js';
+import { palette } from '../utils/constants';
 import { Command } from 'discord-akairo';
 import Pepal from '../structure/pepal';
 
@@ -22,7 +23,8 @@ export default class LoginCommand extends Command {
 					4. Copier \`console.log(document.cookie.split("=")[1])\` et le coller dans le DevTools, appuyer ensuite sur Entrer pour l'éxécuter.
 					5. Copier/coller ici dans le tchat **exactement** ce qui s'est affiché après avoir exécuté la commande.
 					
-					**Il est vraiment recommandé d'exécuter la commande *faq avant de poursuivre.**`
+					**Il est vraiment recommandé d'exécuter la commande *faq avant de poursuivre.**`,
+									color: palette.warning
 								})
 							]
 						}
