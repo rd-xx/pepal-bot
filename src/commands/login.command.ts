@@ -47,10 +47,11 @@ export default class LoginCommand extends Command {
 		}
 
 		const inserted = await pepal.saveCookie(cookie);
-		return message.reply(
-			inserted
+		return message.reply({
+			content: inserted
 				? `Bienvenue, **${pepal.name}**. Votre cookie a bien été sauvegardé et sera utilisé lors de chaque utilisation du bot.`
-				: "C'est noté, votre cookie a bien été actualisé."
-		);
+				: "C'est noté, votre cookie a bien été actualisé.",
+			allowedMentions: { repliedUser: false }
+		});
 	}
 }

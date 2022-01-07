@@ -60,6 +60,9 @@ export default class TimeTableCommand extends Command {
 		if (this.client.user && this.client.user.avatarURL())
 			embed.setThumbnail(this.client.user.avatarURL() as string);
 
-		return message.reply({ embeds: [embed] });
+		return message.reply({
+			embeds: [embed],
+			allowedMentions: { repliedUser: false }
+		});
 	}
 }

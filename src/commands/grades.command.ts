@@ -31,6 +31,9 @@ export default class ChangeDomainCommand extends Command {
 			)} — **${grade.discipline}** : ${grade.title} » **${grade.grade}**\n`;
 
 		embed.setDescription(description.trim());
-		return await message.reply({ embeds: [embed] });
+		return await message.reply({
+			embeds: [embed],
+			allowedMentions: { repliedUser: false }
+		});
 	}
 }

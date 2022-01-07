@@ -27,6 +27,10 @@ export default class CommandErrorListener extends Listener {
 
 		// --------------- \\
 
-		if (command) await message.reply(errorMsg);
+		if (command)
+			await message.reply({
+				content: errorMsg,
+				allowedMentions: { repliedUser: false }
+			});
 	}
 }

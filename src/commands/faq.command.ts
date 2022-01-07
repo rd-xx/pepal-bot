@@ -31,7 +31,9 @@ export default class FaqCommand extends Command {
 		for (const question of questions.values())
 			embed.addField(question.q, question.a, false);
 
-		await message.reply({ embeds: [embed] });
-		return message;
+		return await message.reply({
+			embeds: [embed],
+			allowedMentions: { repliedUser: false }
+		});
 	}
 }
