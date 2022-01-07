@@ -195,6 +195,9 @@ export default class Pepal {
 		return this;
 	}
 
+	/**
+	 * Fonction utilisé pour récuperer tout les cours de l'année, de septembre à fin juin.
+	 */
 	async getTimeTable(): Promise<Pepal> {
 		const rawHtml = (await makeRequest(this.#cookie as string, '?my=edt')) + '',
 			parsedHtml = parse(rawHtml),
@@ -204,6 +207,8 @@ export default class Pepal {
 			throw new UnexpectedError(
 				'Il paraît que le cookie ait expiré... Veuillez utiliser la commande **login** à nouveau.'
 			);
+
+		this.setUserInfos(parsedHtml);
 
 		const script = scripts.childNodes[0],
 			startIndex = script.text.indexOf('events:') + 7,
