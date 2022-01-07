@@ -17,8 +17,6 @@ export default class GradesTask extends Task {
 	}
 
 	async exec(): Promise<void> {
-		console.log('entrei');
-
 		const userRepo = getConnection().getRepository(UserEntity),
 			users = await userRepo.find();
 
@@ -34,12 +32,6 @@ export default class GradesTask extends Task {
 
 			if (!pepal) return;
 			else await pepal.getGrades();
-
-			console.log(
-				"'" + user.currentGrades + "'",
-				"'" + pepal.grades.length + "'"
-			);
-			console.log(typeof user.currentGrades, typeof pepal.grades.length);
 
 			if (user.currentGrades === undefined || user.currentGrades === null) {
 				user.currentGrades = pepal.grades.length;
@@ -57,7 +49,7 @@ export default class GradesTask extends Task {
 						.setColor(palette.success);
 
 				for (const [i, grade] of recentGrades.entries()) {
-					if (i % 2 === 0) embed.addField('\u3000', '\u3000');
+					if (i !== 0 && i % 2 === 0) embed.addField('\u200B', '\u200B', true); // Pour avoir seulement 2 fields en 1 ligne
 					embed.addField(
 						grade.discipline,
 						`${
@@ -69,18 +61,19 @@ export default class GradesTask extends Task {
 							DateTime.DATE_HUGE,
 							{ locale: 'fr' }
 						)}
-						**Note** : **${grade.grade}**`
+						**Note** : **${grade.grade}**`,
+						true
 					);
 				}
-
-				console.log('pepal grades', typeof pepal.grades.length);
 
 				user.currentGrades = pepal.grades.length;
 				await userRepo.save(user);
 
 				try {
 					await discordUser.send({ embeds: [embed] });
-				} catch {}
+				} catch (e) {
+					console.log(e);
+				}
 			}
 		}
 	}

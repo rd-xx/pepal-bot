@@ -34,7 +34,7 @@ export default class UserEntity extends BaseEntity {
 			process.env.CRYPTO_KEY
 		).toString(crypto.enc.Utf8);
 
-		// if (this.currentGrades !== undefined)
-		// 	this.currentGrades = Number(this.currentGrades);
+		if (this.currentGrades !== undefined)
+			this.currentGrades = Number(this.currentGrades);
 	}
 }
