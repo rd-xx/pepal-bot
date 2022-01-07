@@ -27,15 +27,12 @@ export default class DisciplinesCommand extends Command {
 		);
 		let description = `Il y a au total ${pepal.disciplines.length} matières.\n\n`;
 
-		for (const [i, discipline] of pepal.disciplines.entries()) {
-			console.log("'" + discipline.name + "'");
-
+		for (const [i, discipline] of pepal.disciplines.entries())
 			description += `**${discipline.name}** : ${discipline.coefficient}\n${
 				pepal.disciplines[i + 1]?.coefficient !== discipline.coefficient
 					? '\n'
 					: ''
 			}`;
-		}
 
 		embed.setDescription(description);
 		return await message.reply({
