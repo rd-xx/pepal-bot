@@ -13,7 +13,7 @@ export default class Pepal {
 	name?: string;
 	class?: string;
 	#cookie?: string;
-	presenceMode?: 'off' | 'warn' | 'auto' | null;
+	presenceMode?: 'off' | 'warn' | 'auto';
 
 	disciplines: Array<{ name: string; coefficient: number }> = [];
 	grades: Array<{
