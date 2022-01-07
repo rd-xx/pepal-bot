@@ -33,7 +33,7 @@ export default class GradesTask extends Task {
 			if (!pepal) return;
 			else await pepal.getGrades();
 
-			if (user.currentGrades === undefined || user.currentGrades === null) {
+			if (!user.currentGrades) {
 				user.currentGrades = pepal.grades.length;
 				await userRepo.save(user);
 				continue;
