@@ -16,6 +16,9 @@ export default class UserEntity extends BaseEntity {
 	@Column('numeric', { nullable: true })
 	currentGrades?: number | null;
 
+	@Column('varchar', { nullable: true })
+	presenceMode?: 'off' | 'warn' | 'auto' | null;
+
 	// --------------- \\
 
 	@BeforeInsert()

@@ -13,6 +13,7 @@ export default class Pepal {
 	name?: string;
 	class?: string;
 	#cookie?: string;
+	presenceMode?: 'off' | 'warn' | 'auto' | null;
 
 	disciplines: Array<{ name: string; coefficient: number }> = [];
 	grades: Array<{
@@ -34,6 +35,12 @@ export default class Pepal {
 		discipline: string;
 		title: string;
 		description: string | null;
+		start: Date;
+		end: Date;
+	}> = [];
+	presences: Array<{
+		id: number;
+		discipline: string;
 		start: Date;
 		end: Date;
 	}> = [];
@@ -98,6 +105,7 @@ export default class Pepal {
 			);
 
 		this.#cookie = user.ppCookie;
+		this.presenceMode = user.presenceMode;
 
 		return this;
 	}
@@ -270,6 +278,52 @@ export default class Pepal {
 					end: new Date(lesson.end),
 					allDay: lesson.allDay
 				});
+		}
+
+		return this;
+	}
+
+	/**
+	 * Fonction utilisée pour récuperer les présences du jour.
+	 */
+	async getPresences(): Promise<Pepal> {
+		if (!this.timeTable.length)
+			throw new Error(
+				"Il faut que l'emploi du temps soit rempli avant d'exécuter cette fonction."
+			);
+
+		const rawHtml =
+				(await makeRequest(this.#cookie as string, 'presences')) + '',
+			parsedHtml = parse(rawHtml),
+			presenceClasses = parsedHtml.querySelectorAll('[class=""]');
+
+		if (!presenceClasses.length)
+			throw new UnexpectedError(
+				'Il paraît que le cookie ait expiré... Veuillez utiliser la commande **login** à nouveau.'
+			);
+
+		for (const [i, lessonPresence] of presenceClasses.entries()) {
+			const presenceId = Number(
+					parsedHtml
+						.querySelectorAll('a[href*="/presences/s/"]')
+						[i].attrs.href.split('/s/')[1]
+				),
+				discipline = lessonPresence.childNodes[3].text,
+				startDate = DateTime.fromFormat(
+					lessonPresence.childNodes[1].text.split('-')[0],
+					'T'
+				).toJSDate(),
+				endDate = DateTime.fromFormat(
+					lessonPresence.childNodes[1].text.split('-')[1],
+					'T'
+				).toJSDate();
+
+			this.presences.push({
+				id: presenceId,
+				discipline,
+				start: startDate,
+				end: endDate
+			});
 		}
 
 		return this;
