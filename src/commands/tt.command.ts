@@ -106,10 +106,6 @@ export default class TimeTableCommand extends Command {
 				}
 		}
 
-		/**
-		 * WIP
-		 * Il y a un bug dans le cas 'demain'; il récupère les cours d'aujourd'hui
-		 */
 		switch (option) {
 			case "aujourd'hui":
 			case 'aujourdhui':
@@ -151,17 +147,19 @@ export default class TimeTableCommand extends Command {
 				buildFields([nextLesson]);
 				break;
 			case 'demain':
-				const lessonsTomorrow = pepal.timeTable.filter((lesson) => {
-					const lessonDateTime = DateTime.fromJSDate(lesson.start).plus({
-						days: 1
-					});
-					return (
-						lessonDateTime.get('month') ===
+				const lessonsTomorrow = pepal.timeTable.filter(
+					(lesson) =>
+						DateTime.fromJSDate(lesson.start).get('month') ===
 							todayDateTime.plus({ days: 1 }).get('month') &&
-						lessonDateTime.get('day') ===
+						DateTime.fromJSDate(lesson.start).get('day') ===
 							todayDateTime.plus({ days: 1 }).get('day')
-					);
-				});
+				);
+
+				if (!lessonsTomorrow.length)
+					return await message.reply({
+						content: "Vous n'avez pas cours demain !",
+						allowedMentions: { repliedUser: false }
+					});
 
 				embed.setTitle('Cours demain');
 				buildFields(lessonsTomorrow);
