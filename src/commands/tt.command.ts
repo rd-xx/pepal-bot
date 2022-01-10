@@ -64,18 +64,13 @@ export default class TimeTableCommand extends Command {
 		async function buildFields(array: typeof futureLessons): Promise<void> {
 			array.sort((a, b) => +a.start - +b.start);
 			if (array.length === 1) {
-				const relativeTime = capitalize(
-					DateTime.fromJSDate(array[0].start).toRelative({
-						locale: 'fr'
-					}) as string
-				);
 				embed.setDescription(
-					relativeTime +
-						` pendant ${
-							array[0].end.getHours() - array[0].start.getHours()
-						} heures`
+					capitalize(
+						DateTime.fromJSDate(array[0].start).toRelative({
+							locale: 'fr'
+						}) as string
+					)
 				);
-
 				embed.addField('Matière', array[0].discipline, true);
 				if (array[0].room) embed.addField('Salle', array[0].room, true);
 				if (array[0].professor)
@@ -95,12 +90,7 @@ export default class TimeTableCommand extends Command {
 						${
 							lesson.professor ? `**Intervenant** : ${lesson.professor}\n` : ''
 						}**Salle** : ${lesson.room}
-						${
-							relativeTime +
-							` pendant ${
-								lesson.end.getHours() - lesson.start.getHours()
-							} heures`
-						}`,
+						${relativeTime}`,
 						true
 					);
 				}
