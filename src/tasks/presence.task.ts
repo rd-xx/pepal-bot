@@ -1,11 +1,11 @@
+import { makeRequest } from '../utils/https.helper';
 import UserEntity from '../database/user.entity';
+import { palette } from '../utils/constants';
+import { MessageEmbed } from 'discord.js';
 import { getConnection } from 'typeorm';
+import Pepal from '../structure/pepal';
 import { Task } from 'discord-akairo';
 import { DateTime } from 'luxon';
-import Pepal from '../structure/pepal';
-import { MessageEmbed } from 'discord.js';
-import { palette } from '../utils/constants';
-import { makeRequest } from '../utils/https.helper';
 
 // -------------------------------------------------- \\
 
@@ -17,19 +17,19 @@ export default class PresenceTask extends Task {
 		});
 	}
 
+	/**
+	 * Toutes les minutes, cette fonction récupère tout les utilisateurs du bot.
+	 * Elle envoie 3 requêtes par utilisation pour vérifier s'il faut valider l'appel.
+	 * Théoriquement, elle n'est pas saîne pour Pepal s'il y a beaucoup d'utilisateurs.
+	 */
 	async exec(): Promise<void> {
-		const dateObject = DateTime.local({ zone: 'Europe/Paris' });
-		console.log(dateObject.get('hour'), dateObject.get('minute'));
-
-		// if ([9, 13, 4].includes(hour) && [0, 30, 26, 27].includes(minutes))
-
-		const userRepo = getConnection().getRepository(UserEntity),
+		const dateObject = DateTime.local({ zone: 'Europe/Paris' }),
+			userRepo = getConnection().getRepository(UserEntity),
 			users = await userRepo.find();
 
 		// Il est préférable d'utiliser .forEach pour qu'il exécute toutes les itérations en même temps.
 		users.forEach(async (user) => {
 			if (!user.ppCookie) return;
-			else if (!user.presenceMode) return;
 			else if (user.presenceMode === 'off') return;
 
 			let pepal: Pepal | undefined;
@@ -43,6 +43,10 @@ export default class PresenceTask extends Task {
 			if (!pepal) return;
 			else await pepal.getTimeTable();
 
+			console.log(pepal.presences);
+
+			if (!pepal.presences.filter((lesson) => lesson.opened).length) return;
+
 			const lessonsToday = pepal.timeTable
 				.filter((lesson) => {
 					const lessonDateObject = DateTime.fromJSDate(lesson.start);
@@ -54,47 +58,44 @@ export default class PresenceTask extends Task {
 				.sort((a, b) => +a.start - +b.start);
 			if (lessonsToday.length) {
 				await pepal.getPresences();
-				const lessonPresence = pepal.presences.find(
-					(presence) =>
-						DateTime.fromJSDate(presence.start).get('hour') ===
-						dateObject.get('hour')
+				const openedPresence = pepal.presences.find(
+					(presence) => presence.opened
 				);
 
-				if (lessonPresence) {
+				if (openedPresence) {
 					const discordUser = await this.client.users.fetch(pepal.discordId),
-						embed = new MessageEmbed();
+						embed = new MessageEmbed().setURL(
+							`https://www.pepal.eu/presences/s/${openedPresence.id}`
+						);
 
 					if (user.presenceMode === 'warn') {
 						embed.setTitle('Appel ouvert');
-						embed.setURL(
-							`https://www.pepal.eu/presences/s/${lessonPresence.id}`
-						);
 						embed.setColor(palette.warning);
 						embed.setDescription(
-							`L'appel du cours de **${lessonPresence.discipline}** est ouvert!`
+							`L'appel du cours de **${openedPresence.discipline}** est ouvert !`
 						);
-					} else
-					/**
-					 * WIP
-					 * /!\ Besoin de plus d'informations sur comment est affiché un appel ouvert sur Pepal pour déterminer si l'appel a déjà été validé /!\
-					 * Besoin de plus d'informations sur la réponse d'un appel validé avec succès, car même si une tentative de valider l'appel est effectué à 6 heures du matin,
-					 * Pepal renvoie un code 200 et :
-					 *  swal({
-								title: "",
-								html: "La séance est terminée<br /> Validation impossible.",
-								type: "error",
-								showCancelButton: false,
-								showConfirmButton: true,
-						  },
-						  function() {
-								location.reload();
-						  });
-					 */
-						await makeRequest(
-							user.ppCookie,
-							'student/upload.php',
-							`act=set_present&seance_pk=${lessonPresence.id}`
-						);
+					} else {
+						const rawResponse =
+							(await makeRequest(
+								user.ppCookie,
+								'student/upload.php',
+								`act=set_present&seance_pk=${openedPresence.id}`
+							)) + '';
+
+						if (rawResponse.includes('validée')) {
+							embed.setTitle('Présence validée');
+							embed.setColor(palette.success);
+							embed.setDescription(
+								`L'appel du cours de **${openedPresence.discipline}** a bien été effectué !`
+							);
+						} else {
+							embed.setTitle('Présence non validée');
+							embed.setColor(palette.error);
+							embed.setDescription(
+								`Il n'a pas été possible d'effectuer l'appel du cours de **${openedPresence.discipline}**. Veuillez le faire manuellement.`
+							);
+						}
+					}
 
 					await discordUser.send({ embeds: [embed] });
 				} else return;

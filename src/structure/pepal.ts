@@ -43,6 +43,7 @@ export default class Pepal {
 		discipline: string;
 		start: Date;
 		end: Date;
+		opened: boolean;
 	}> = [];
 
 	/**
@@ -207,7 +208,10 @@ export default class Pepal {
 	 * Fonction utilisé pour récuperer tout les cours de l'année, de septembre à fin juin.
 	 */
 	async getTimeTable(): Promise<Pepal> {
-		const rawHtml = (await makeRequest(this.#cookie as string, '?my=edt')) + '',
+		if (!this.#cookie)
+			throw new UnexpectedError("Je n'ai aucun cookie à utiliser.");
+
+		const rawHtml = (await makeRequest(this.#cookie, '?my=edt')) + '',
 			parsedHtml = parse(rawHtml),
 			scripts = parsedHtml.querySelectorAll('script')[9];
 
@@ -287,22 +291,25 @@ export default class Pepal {
 	 * Fonction utilisée pour récuperer les présences du jour.
 	 */
 	async getPresences(): Promise<Pepal> {
-		if (!this.timeTable.length)
+		if (!this.#cookie)
+			throw new UnexpectedError("Je n'ai aucun cookie à utiliser.");
+		else if (!this.timeTable.length)
 			throw new Error(
 				"Il faut que l'emploi du temps soit rempli avant d'exécuter cette fonction."
 			);
 
-		const rawHtml =
-				(await makeRequest(this.#cookie as string, 'presences')) + '',
+		const rawHtml = (await makeRequest(this.#cookie, 'presences')) + '',
 			parsedHtml = parse(rawHtml),
-			presenceClasses = parsedHtml.querySelectorAll('[class=""]');
+			presenceClasses = parsedHtml.querySelector('#body_presences');
 
-		if (!presenceClasses.length)
+		if (!presenceClasses)
 			throw new UnexpectedError(
 				'Il paraît que le cookie ait expiré... Veuillez utiliser la commande **login** à nouveau.'
 			);
 
-		for (const [i, lessonPresence] of presenceClasses.entries()) {
+		for (const [i, lessonPresence] of presenceClasses.childNodes
+			.filter((child) => child.text.includes('Relevé')) // Il y a 5 childs et seulement le 1 et 3 nous intéressent
+			.entries()) {
 			const presenceId = Number(
 					parsedHtml
 						.querySelectorAll('a[href*="/presences/s/"]')
@@ -316,13 +323,16 @@ export default class Pepal {
 				endDate = DateTime.fromFormat(
 					lessonPresence.childNodes[1].text.split('-')[1],
 					'T'
-				).toJSDate();
+				).toJSDate(),
+				rawLessonPresencePage =
+					(await makeRequest(this.#cookie, `presences/s/${presenceId}`)) + '';
 
 			this.presences.push({
 				id: presenceId,
 				discipline,
 				start: startDate,
-				end: endDate
+				end: endDate,
+				opened: rawLessonPresencePage.includes('Valider')
 			});
 		}
 
