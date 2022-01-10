@@ -43,18 +43,14 @@ export default class PresenceTask extends Task {
 			if (!pepal) return;
 			else await pepal.getTimeTable();
 
-			console.log(pepal.presences);
-
-			if (!pepal.presences.filter((lesson) => lesson.opened).length) return;
-
 			const lessonsToday = pepal.timeTable
-				.filter((lesson) => {
-					const lessonDateObject = DateTime.fromJSDate(lesson.start);
-					return (
-						lessonDateObject.get('month') === dateObject.get('month') &&
-						lessonDateObject.get('day') === dateObject.get('day')
-					);
-				})
+				.filter(
+					(lesson) =>
+						DateTime.fromJSDate(lesson.start).get('month') ===
+							dateObject.get('month') &&
+						DateTime.fromJSDate(lesson.start).get('day') ===
+							dateObject.get('day')
+				)
 				.sort((a, b) => +a.start - +b.start);
 			if (lessonsToday.length) {
 				await pepal.getPresences();
