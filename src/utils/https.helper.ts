@@ -14,17 +14,23 @@ export async function makeRequest(
 	path: string,
 	body?: string
 ): Promise<unknown> {
+	const headers = {
+		'User-Agent':
+			'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34',
+		Cookie: `sdv=${cookie}`
+	};
+	if (body)
+		Object.assign(headers, {
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+		});
+
 	let responsePayload = '';
 	return await new Promise(async (resolve, reject) => {
 		const req = request(
 			{
 				hostname: 'www.pepal.eu',
 				path: '/' + path,
-				headers: {
-					'User-Agent':
-						'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.34',
-					Cookie: `sdv=${cookie}`
-				},
+				headers,
 				method: body ? 'POST' : 'GET'
 			},
 			(response) => {

@@ -6,6 +6,7 @@ import { getConnection } from 'typeorm';
 import Pepal from '../structure/pepal';
 import { Task } from 'discord-akairo';
 import { DateTime } from 'luxon';
+import { format } from 'tsuki-utilities';
 
 // -------------------------------------------------- \\
 
@@ -78,7 +79,7 @@ export default class PresenceTask extends Task {
 								`act=set_present&seance_pk=${openedPresence.id}`
 							)) + '';
 
-						if (rawResponse.includes('validée')) {
+						if (format(rawResponse) === 'location.reload();') {
 							embed.setTitle('Présence validée');
 							embed.setColor(palette.success);
 							embed.setDescription(
