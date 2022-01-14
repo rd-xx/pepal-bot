@@ -7,4 +7,4 @@ Bot Discord utilitaire interagissant avec Pepal, portail du groupe SDV Éducatio
 - [x] Visualiser les notes
 - [x] Avertir les nouvelles notes
 - [x] Valider la présence automatiquement (dangereux)
-- [ ] Visualiser les prochains cours
+- [x] Visualiser les prochains cours
