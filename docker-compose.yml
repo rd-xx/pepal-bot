@@ -8,8 +8,6 @@ services:
     command: 'npm run start:$ENVIRONMENT'
     volumes:
       - .:/app
-    links:
-      - db
 
 networks:
   default:
