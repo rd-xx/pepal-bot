@@ -6,6 +6,7 @@ import { getConnection } from 'typeorm';
 import Pepal from '../structure/pepal';
 import { Task } from 'discord-akairo';
 import { DateTime } from 'luxon';
+import { format } from 'tsuki-utilities';
 
 // -------------------------------------------------- \\
 
@@ -18,13 +19,15 @@ export default class PresenceTask extends Task {
 	}
 
 	/**
-	 * Toutes les minutes, cette fonction récupère tout les utilisateurs du bot.
+	 * Toutes les minutes, après 7 heures et avant 18 heures, cette fonction récupère tout les utilisateurs du bot.
 	 * Elle envoie 3 requêtes par utilisation pour vérifier s'il faut valider l'appel.
 	 * Théoriquement, elle n'est pas saîne pour Pepal s'il y a beaucoup d'utilisateurs.
 	 */
 	async exec(): Promise<void> {
-		const dateObject = DateTime.local({ zone: 'Europe/Paris' }),
-			userRepo = getConnection().getRepository(UserEntity),
+		const dateObject = DateTime.local({ zone: 'Europe/Paris' });
+		if (dateObject.hour >= 18 || dateObject.hour <= 7) return;
+
+		const userRepo = getConnection().getRepository(UserEntity),
 			users = await userRepo.find();
 
 		// Il est préférable d'utiliser .forEach pour qu'il exécute toutes les itérations en même temps.
@@ -78,7 +81,7 @@ export default class PresenceTask extends Task {
 								`act=set_present&seance_pk=${openedPresence.id}`
 							)) + '';
 
-						if (rawResponse.includes('validée')) {
+						if (format(rawResponse) === 'location.reload();') {
 							embed.setTitle('Présence validée');
 							embed.setColor(palette.success);
 							embed.setDescription(

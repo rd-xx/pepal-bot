@@ -30,7 +30,8 @@ export default class LoginCommand extends Command {
 						}
 					}
 				}
-			]
+			],
+			channel: 'dm'
 		});
 	}
 
