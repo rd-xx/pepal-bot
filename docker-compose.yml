@@ -9,9 +9,9 @@ services:
     volumes:
       - .:/app
     links:
-      - db
+      - db01
 
-  db:
+  db01:
     container_name: ahComplements_db
     image: postgres:14-alpine
     restart: always
