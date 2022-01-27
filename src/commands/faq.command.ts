@@ -24,7 +24,7 @@ export default class FaqCommand extends Command {
 				},
 				{
 					q: "Comment puis-je avoir la certitude que mon cookie ne sera pas utilisé à d'autres fins, comme changer mon mot de passe ?",
-					a: 'Si ça peut vous rassurer, le bot est totalement **[open-source](https://github.com/Reydux/pepal-bot)**. De ce fait, il est possible que ce bot soit un fork utilisé à mauvais escient, vérifiez que son nom est `Pepal - Dev#4666` et que son ID est `926894160265490463`.'
+					a: 'Si ça peut vous rassurer, le bot est totalement **[open-source](https://github.com/Reydux/pepal-bot)**. De ce fait, il est possible que ce bot soit un fork utilisé à mauvais escient, vérifiez que son nom est `Pepal#1559` et que son ID est `930006787799805972`.'
 				}
 			];
 
