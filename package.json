@@ -26,7 +26,7 @@
 		"discord-akairo": "npm:@notenoughupdates/discord-akairo@dev",
 		"discord.js": "^13.5.1",
 		"dotenv": "^10.0.0",
-		"luxon": "^2.3.0",
+		"luxon": "^2.5.2",
 		"node-html-parser": "^5.2.0",
 		"pg": "^8.7.1",
 		"tsuki-utilities": "^0.3.3",
